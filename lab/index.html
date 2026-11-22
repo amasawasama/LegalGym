@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LegalGym · Agent 实验室</title>
+  <link rel="stylesheet" href="lab.css">
+  <link rel="stylesheet" href="replay.css">
+  <script defer src="word-pager.js"></script>
+  <script defer src="replay-view.js"></script>
+  <script defer src="lab.js"></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="../index.html">LegalGym <span>Agent 实验室</span></a><span id="runtime-mode" class="local-label">本机验证版</span></header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">连接你的 Agent，观察每一次操作</p><h1>从连接到交付，一次真实运行。</h1><p>Agent 在本机独立执行；本页查看实时日志、包含页面截图的运行记录，以及完整 Word 交付。</p></div><div class="import-actions"><label for="import-replay" class="secondary">导入回放记录</label><input id="import-replay" type="file" accept=".json,.legalgym.json" hidden><a class="quiet-link" href="legalgym-agent-starter.zip" download>下载 Agent Starter</a></div></div>
+    <details class="mode-guide"><summary>本机运行与静态回放有什么区别？</summary><p><strong>本机运行：</strong>本页连接本机任务后端，独立 starter 领取任务并回传事件。<strong>静态回放：</strong>本机完成后导出 .legalgym.json，在此导入；无需运行后端或上传云端，也可以播放过程、翻阅全部 Word 页面和下载合同。</p><p>浏览器负责展示和翻页；模型执行和 Word 排版由本机程序完成。首页的固定示例与个人运行记录独立。</p><button id="load-example" class="secondary" type="button">载入已导出的示例回放</button><a class="quiet-link" href="examples/c06-external-starter.legalgym.json" download>下载示例回放包</a></details>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <section class="connection" aria-labelledby="connection-title">
+      <div><h2 id="connection-title">连接外部 Agent</h2><p id="connection-status" aria-live="polite">正在连接本机任务后端…</p><button id="reconnect-backend" class="secondary" type="button" hidden>重新检测连接</button></div>
+      <details id="setup"><summary>查看连接方法</summary><p>首次使用请先<a href="../downloads/legalgym-source.zip" download>下载完整项目源码</a>，安装本机依赖；只有 starter 下载包还不能提供任务环境。在项目目录运行 .venv/bin/python local_lab/server.py --port 8841，再在另一个终端配置模型密钥并启动 starter。</p><div class="command"><code id="starter-command"></code><button id="copy-command" type="button">复制命令</button></div><p>模型密钥保留在 starter 进程。静态托管页可通过“导入回放记录”离线查看结果。</p><a id="open-local-lab" href="http://127.0.0.1:8841/lab/" target="_blank" rel="noopener" hidden>打开本机运行页</a></details>
+    </section>
+    <section class="launch" aria-labelledby="launch-title">
+      <div><h2 id="launch-title">创建一次运行</h2><p>当前案例：虚构工程咨询合同，代表乙方审查四处条款。</p></div>
+      <div class="launch-controls"><label>选择在线 Agent<select id="agent-select" aria-label="选择在线 Agent"><option value="">等待 starter 连接</option></select></label><button id="start-run" class="primary" type="button" disabled>开始运行</button></div>
+    </section>
+    <div class="workspace">
+      <aside class="history"><div class="history-heading"><h2>运行记录</h2><span id="run-count">0</span></div><div id="run-list"><p class="muted">还没有运行记录。连接 Agent 后，点击“开始运行”。</p></div></aside>
+      <section class="run-panel" aria-label="运行详情">
+        <div id="empty-run" class="empty"><span class="empty-mark" aria-hidden="true">LG</span><h2>等待第一份交办</h2><p>开始后，这里会实时显示模型进度、工具调用、错误和页面截图。</p></div>
+        <div id="run-detail" hidden>
+          <div class="run-heading"><div><p class="eyebrow" id="run-id"></p><h2 id="run-title"></h2><p id="run-agent" class="muted"></p></div><span id="run-status" class="status"></span></div>
+          <div class="metrics"><div><span>运行时间</span><strong id="run-duration">—</strong></div><div><span>工具调用</span><strong id="run-calls">0</strong></div><div><span>错误返回</span><strong id="run-errors">0</strong></div><div><span>页面截图</span><strong id="run-shots">0</strong></div></div>
+          <p id="failure-summary" role="status" class="failure-summary" hidden></p>
+          <div class="actions"><button id="delete-run" class="danger" type="button" hidden>删除记录</button><a id="raw-log" class="secondary" target="_blank" rel="noopener">查看原始日志</a><a id="download-log" class="quiet-link" download>下载日志</a><button id="open-replay" class="secondary" type="button" hidden>查看运行记录</button><a id="export-replay" class="secondary" download>导出回放包</a><button id="stop-run" class="danger" type="button" hidden>停止运行</button><span id="stream-status" class="muted" aria-live="polite"></span></div>
+          <div class="tabs" role="tablist" aria-label="查看运行内容"><button id="tab-log" role="tab" aria-selected="true" aria-controls="panel-log" data-tab="log">执行日志</button><button id="tab-replay" role="tab" aria-selected="false" aria-controls="panel-replay" data-tab="replay" class="result-tab">运行记录</button><button id="tab-delivery" role="tab" aria-selected="false" aria-controls="panel-delivery" data-tab="delivery" class="result-tab">合同交付</button></div>
+          <div id="panel-log" role="tabpanel" aria-labelledby="tab-log"><div class="log-heading"><p>工具事件由环境记录；Agent 消息由 starter 上报。</p><label><input id="follow-log" type="checkbox" checked> 跟随最新日志</label></div><div id="event-log" class="event-log" aria-label="执行日志"></div></div>
+          <div id="panel-replay" role="tabpanel" aria-labelledby="tab-replay" hidden><div class="result-intro"><h3>本次交互回放</h3><p>沿工具调用逐步查看操作、返回结果与页面截图。全部浏览截图与页面文字可在下方展开。</p></div><p id="replay-message" class="empty-text">运行结束后，本页展示这次任务的交互回放。也可导入已有回放包。</p><div id="inline-replay"></div>
+            <details id="page-records" class="page-records"><summary>浏览截图与页面文字</summary><div id="panel-screens"><p id="no-screens" class="empty-text">Agent 浏览资料后，真实页面截图会出现在这里。</p><div id="screen-buttons" class="screen-buttons"></div><figure id="screen-view" hidden><figcaption id="screen-caption"></figcaption><img id="screen-image" alt="本次运行的资料页面截图"><details><summary>查看页面文字</summary><pre id="screen-text"></pre></details></figure></div></details>
+          </div>
+          <div id="panel-delivery" role="tabpanel" aria-labelledby="tab-delivery" hidden><div id="delivery-wait" class="empty-text">提交完成后，可以查看全部 Word 页面并下载合同。</div><div id="delivery-ready" hidden><h3>本次交付已保存</h3><p>以下页面来自本次导出的 Word。可左右翻阅全部页面；完整修订与批注保留在下载文件中。</p><div class="actions"><button id="delivery-replay" class="primary" type="button">在本页回看修订过程</button><a id="delivery-word" class="secondary" download>下载修订合同 Word</a></div><div id="word-pages"></div></div><p class="score-note">法律质量评分尚未建立。导入回放仅用于开发查看，不作为已验证成绩。</p></div>
+        </div>
+      </section>
+    </div>
+    <footer>本机运行记录：.run/lab/ · 静态回放：在本页导入 .legalgym.json，无需上传云端</footer>
+  </main>
+</body>
+</html>

@@ -1,3 +1,15 @@
+# LegalGym · 法律 Agent 工作环境
+
+[访问当前网站](https://amasawasama.github.io/LegalGym/) · [Agent 实验室与回放](https://amasawasama.github.io/LegalGym/lab/?example=1&tab=log)
+
+当前网站提供合同任务示例、真实运行日志与交互回放、修订 Word 全部页面预览、回放包导入及下载。
+GitHub Pages 仅展示静态内容；新任务需在使用者本机启动任务后端和独立 starter。网页中可下载 starter 和 [完整本机项目](downloads/legalgym-source.zip)。
+
+静态网站直接位于仓库根目录；沿用现有 Pages 发布方式。模型密钥、本机环境和个人运行目录均未上传。
+此前的框架文档、贡献说明及原型资料保留如下，相关进度描述以当前网站为准。
+
+---
+
 <div align="center">
 
 # LegalGym
