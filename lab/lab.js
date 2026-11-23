@@ -31,7 +31,7 @@ function renderRun(run){
   $("tab-replay").dataset.ready=String(!active(run.status)&&run.eventCount>0);
   activeRun=run;$("empty-run").hidden=true;$("run-detail").hidden=false;$("run-id").textContent=(run.imported?"导入记录 · ":"")+(run.originalRunId||run.id);$("run-title").textContent=run.case;$("run-agent").textContent=`${run.agentName} · ${run.model} · ${run.agentVersion}${run.imported?" · 本地导入，非正式评测成绩":""}`;
   $("run-status").textContent=statuses[run.status]||run.status;$("run-status").dataset.status=run.status;$("run-duration").textContent=duration(run.elapsedSeconds);$("run-calls").textContent=run.toolCalls;$("run-errors").textContent=run.toolErrors;$("run-shots").textContent=run.screenshots;
-  $("failure-summary").hidden=run.status!=="failed";$("failure-summary").textContent="失败原因："+(run.failureSummary||"请展开日志中的错误详情。");$("delete-run").hidden=active(run.status);
+  $("failure-summary").hidden=run.status!=="failed";$("failure-summary").textContent="失败原因："+(run.failureSummary||"请展开日志中的错误详情。");
   const imported=imports.get(run.id);const logs=imported?.logUrl||run.logUrl;
   $("raw-log").href=logs;$("download-log").href=logs;$("download-log").download=(run.originalRunId||run.id)+".jsonl";
   $("export-replay").href=imported?.packageUrl||`/api/runs/${run.id}/replay-package`;$("export-replay").download=(run.originalRunId||run.id)+".legalgym.json";
@@ -100,13 +100,6 @@ async function importReplay(file){
   const old=imports.get(id);if(old)for(const url of old.urls)URL.revokeObjectURL(url);
   imports.set(id,{run,packet,urls,logUrl,packageUrl});mergeRuns();selectRun(id);notice("已在浏览器本地导入回放，无需上传云端。此记录不作为正式评测成绩。");
 }
-$("delete-run").onclick=async()=>{
-  const run=activeRun;if(!run||active(run.status))return;
-  if(!confirm(run.imported?"移除这条导入记录？原始文件不会被删除。":"删除本次运行的日志、截图和交付文件？此操作不可撤销。"))return;
-  try{if(run.imported){for(const url of imports.get(run.id).urls)URL.revokeObjectURL(url);imports.delete(run.id);}else await api(`/api/runs/${run.id}`,undefined,"DELETE");
-    if(stream)stream.close();replay.stop();liveRuns=liveRuns.filter(r=>r.id!==run.id);for(const key of cache.keys())if(key.startsWith(run.id+":"))cache.delete(key);mergeRuns();selected=null;activeRun=null;renderHistory();if(state.runs.length)selectRun(state.runs[0].id);else{$("run-detail").hidden=true;$("empty-run").hidden=false;history.replaceState(null,"",location.pathname);}notice("记录已删除。");
-  }catch(e){notice(e.message);}
-};
 $("agent-select").onchange=updateStart;
 $("start-run").onclick=async()=>{const b=$("start-run");b.disabled=true;try{notice("");const run=await api("/api/runs",{agentId:$("agent-select").value});liveRuns.unshift(run);mergeRuns();selectRun(run.id);setTab("log");await refresh();}catch(e){notice(e.message);updateStart();}};
 $("stop-run").onclick=async()=>{try{renderRun(await api(`/api/runs/${selected}/stop`,{}));}catch(e){notice(e.message);}};
