@@ -15,7 +15,7 @@ function mergeRuns(){state.runs=[...[...imports.values()].map(x=>x.run),...liveR
 function setMode(live){backend=live;$("runtime-mode").textContent=live?"本机联机模式":"静态回放模式";$("open-local-lab").hidden=live;$("reconnect-backend").hidden=live;command=`python3 legalgym-agent-starter/starter.py --server ${live?location.origin:"http://127.0.0.1:8841"}`;$("starter-command").textContent=command;}
 function renderAgents(){
   const select=$("agent-select"),old=select.value,online=state.agents.filter(a=>a.online);select.replaceChildren();
-  if(!backend){$("setup").open=true;select.append(new Option("静态模式：请先打开本机运行页",""));$("connection-status").textContent="当前仅查看回放。可导入本机导出的记录包；启动任务请打开本机运行页。";}
+  if(!backend){select.append(new Option("运行新任务请先完成上方自动配置",""));$("connection-status").textContent="参考 Replay 无需安装即可查看。若要运行新任务，请使用上方启动包准备本机环境。";}
   else if(!online.length){select.append(new Option("等待 starter 连接",""));$("connection-status").textContent="后端在线，等待独立 starter 连接。";$("setup").open=true;}
   else{for(const a of online)select.append(new Option(`${a.name} · ${a.currentRun?"执行中":"可领取任务"}`,a.id));if(online.some(a=>a.id===old))select.value=old;$("connection-status").textContent=`${online.length} 个 Agent 已连接 · ${online.map(a=>a.model).join(" / ")}`;}
   updateStart();
@@ -115,14 +115,15 @@ $("reconnect-backend").onclick=()=>refresh(true);
 $("open-replay").onclick=()=>setTab("replay");
 $("delivery-replay").onclick=()=>{setTab("replay");const index=replay.steps?.findIndex(s=>s.kind==="delivery");if(index>=0)replay.show(index);};
 $("import-replay").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{await importReplay(file);}catch(error){notice("导入失败："+error.message);}e.target.value="";};
-async function loadExample(tab="replay"){
+async function loadExample(tab="replay",scroll=true){
   try{const r=await fetch("examples/c06-external-starter.legalgym.json");if(!r.ok)throw Error("找不到示例文件");const blob=await r.blob();const metadata=JSON.parse(await blob.text());
     const existing=liveRuns.find(run=>run.id===metadata.run.id);
     if(existing)selectRun(existing.id);else await importReplay(new File([blob],"c06-external-starter.legalgym.json",{type:"application/json"}));
-    setTab(tab);$("run-detail").scrollIntoView({block:"start"});notice("正在查看已完成的示例运行记录；此操作不会启动新的模型请求。");
+    setTab(tab);if(scroll)$("run-detail").scrollIntoView({block:"start"});notice("正在查看已完成的示例运行记录；此操作不会启动新的模型请求。");
   }catch(e){notice("请通过“导入回放记录”选择本文件夹 examples/ 中的示例包。"+e.message);}
 }
 $("load-example").onclick=()=>loadExample();
+$("show-first-run").onclick=()=>{$("first-run-guide").open=true;$("first-run-guide").scrollIntoView({block:"start"});};
 const tabs=[...document.querySelectorAll("[data-tab]")];for(const b of tabs){b.onclick=()=>setTab(b.dataset.tab);b.onkeydown=e=>{let i=tabs.indexOf(b);if(e.key==="ArrowRight")i=(i+1)%tabs.length;else if(e.key==="ArrowLeft")i=(i+tabs.length-1)%tabs.length;else return;e.preventDefault();tabs[i].focus();setTab(tabs[i].dataset.tab);};}
 const initialTab=new URLSearchParams(location.search).get("tab");if(["log","replay","screens","delivery"].includes(initialTab))setTab(initialTab);
-refresh().then(()=>{if(new URLSearchParams(location.search).get("example")==="1")return loadExample(initialTab||"log");});setInterval(()=>refresh(),3000);
+refresh().then(()=>{const explicit=new URLSearchParams(location.search).get("example")==="1";if(explicit||backend===false)return loadExample(initialTab||"replay",explicit);});setInterval(()=>refresh(),3000);

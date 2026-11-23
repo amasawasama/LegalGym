@@ -2,6 +2,8 @@
 
 [访问当前网站](https://amasawasama.github.io/LegalGym/) · [Agent 实验室与回放](https://amasawasama.github.io/LegalGym/lab/?example=1&tab=log)
 
+首次打开实验室会自动载入已完成的真实 Replay，无需安装或密钥。新任务可使用 [自动配置启动包（预览版）](downloads/legalgym-quickstart.zip)，解压运行后自动准备本机依赖；仍需自己的模型 API Key。
+
 当前网站提供合同任务示例、真实运行日志与交互回放、修订 Word 全部页面预览、回放包导入及下载。
 GitHub Pages 仅展示静态内容；新任务需在使用者本机启动任务后端和独立 starter。网页中可下载 starter 和 [完整本机项目](downloads/legalgym-source.zip)。
 
