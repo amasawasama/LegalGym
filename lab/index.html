@@ -4,42 +4,61 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LegalGym · Agent 实验室</title>
-  <link rel="stylesheet" href="lab.css">
+  <link rel="stylesheet" href="lab.css?v=intents-20261123">
   <link rel="stylesheet" href="replay.css">
   <script defer src="word-pager.js"></script>
   <script defer src="replay-view.js"></script>
-  <script defer src="lab.js"></script>
+  <script defer src="lab.js?v=intents-20261123"></script>
 </head>
 <body>
   <header class="topbar"><a class="brand" href="../index.html">LegalGym <span>Agent 实验室</span></a><span id="runtime-mode" class="local-label">本机验证版</span></header>
   <main>
-    <div class="intro"><div><p class="eyebrow">连接你的 Agent，观察每一次操作</p><h1>从连接到交付，一次真实运行。</h1><p>先看一次已完成的真实运行，无需安装；想跑自己的任务，可下载自动配置启动包。</p></div><div class="import-actions"><label for="import-replay" class="secondary">导入回放记录</label><input id="import-replay" type="file" accept=".json,.legalgym.json" hidden><a class="quiet-link" href="legalgym-agent-starter.zip" download>下载 Agent Starter</a></div></div>
-    <section class="first-visit" aria-label="首次使用">
-      <article class="reference-card"><p class="eyebrow">无需安装 · 无需密钥</p><h2>先看一份已完成的运行</h2><p>合同审查参考记录：9 次工具调用、7 张浏览截图，含修订 Word 两页预览。可以逐步回放，也可以下载交付物。</p><button id="load-example" class="primary" type="button">查看完整参考 Replay</button><a class="quiet-link" href="examples/c06-external-starter.legalgym.json" download>下载参考回放包</a></article>
-      <article><p class="eyebrow">运行新任务 · 使用自己的模型密钥</p><h2>自动准备本机运行环境</h2><p>不必先装 Python 或手动敲安装命令。下载启动包，解压并运行脚本，自动配置依赖、连接示例 Agent 并打开运行页。</p><button id="show-first-run" class="secondary" type="button">获取自动配置启动包</button><small>Mac / Windows 预览版；下载后须由你运行。尚未提供云端免安装执行。</small></article>
+    <div class="intro"><div><p class="eyebrow">Agent 实验室</p><h1>先选你想做的事。</h1><p>查看已有结果，或准备一次新的合同审查。当前任务固定为 C06 工程咨询合同。</p></div></div>
+    <nav class="intent-nav" aria-label="选择操作目的">
+      <button id="intent-view" type="button" data-intent="view" aria-pressed="true" aria-controls="intent-panel-view"><strong>查看已有运行</strong><span>看参考示例，或导入自己的记录</span></button>
+      <button id="intent-demo" type="button" data-intent="demo" aria-pressed="false" aria-controls="intent-panel-demo"><strong>运行示例 Agent</strong><span>使用我们提供的 Agent 跑一次任务</span></button>
+      <button id="intent-own" type="button" data-intent="own" aria-pressed="false" aria-controls="intent-panel-own"><strong>接入自己的 Agent</strong><span>下载范例，适配自己的程序</span></button>
+    </nav>
+    <section id="intent-panel-view" class="intent-panel" aria-labelledby="intent-view">
+      <div class="intent-panel-heading"><div><p class="eyebrow">无需安装 · 无需模型密钥</p><h2>从一份已完成的运行开始</h2><p>参考运行包含 9 次工具调用、7 张浏览截图和两页修订 Word。下方默认显示执行日志，可切换查看回放与交付。</p></div></div>
+      <div class="intent-actions"><button id="load-example" class="primary" type="button">查看参考运行</button><label for="import-replay" class="secondary">导入本地回放</label><input id="import-replay" type="file" accept=".json,.legalgym.json" hidden></div>
+      <p class="path-note">已有 .legalgym.json 文件？直接导入即可，本地文件不会上传。查看后可在运行详情中下载日志、回放包和合同。</p>
     </section>
-    <details id="first-run-guide" class="mode-guide"><summary>第一次运行：下载、配置模型、开始任务</summary><ol class="setup-steps"><li><a class="primary" href="https://amasawasama.github.io/LegalGym/downloads/legalgym-quickstart.zip" download>下载自动配置启动包</a><p>包含 Mac 与 Windows 启动脚本。解压后，Mac 运行 Start-Mac.command，Windows 运行 Start-Windows.cmd；系统可能要求确认。</p></li><li><strong>按提示填写自己的模型配置</strong><p>填写兼容接口地址、模型名和 API Key。启动器联网下载 Python、浏览器和依赖；密钥只用于当前本机进程，不保存到文件。</p></li><li><strong>浏览器自动打开后，点击“开始运行”</strong><p>保持启动窗口打开。本页查看实时日志与交付结果；运行模型可能产生费用。新运行的 Word 页面预览需要另配文档渲染器，Word 文件仍可下载。</p></li></ol><p class="muted">自动配置脚本为预览版，尚未完成全新 Mac / Windows 实机安装验证。需要自定义 Agent 的开发者可<a href="https://amasawasama.github.io/LegalGym/downloads/legalgym-source.zip" download>下载完整源码</a>，参照 starter 中的适配指南。</p><p>若希望访客连启动包和模型密钥也不需要，只在网页点击就能运行，需要我们另行部署云端执行服务；目前这个公开站仍是静态托管。</p></details>
-    <details class="mode-guide"><summary>本机运行与静态回放有什么区别？</summary><p><strong>本机运行：</strong>本页连接本机任务后端，独立 starter 领取任务并回传事件。<strong>静态回放：</strong>本机完成后导出 .legalgym.json，在此导入；无需运行后端或上传云端，也可以播放过程、翻阅全部 Word 页面和下载合同。</p><p>浏览器负责展示和翻页；模型执行和 Word 排版由本机程序完成。首页的固定示例与个人运行记录独立。</p><a class="quiet-link" href="examples/c06-external-starter.legalgym.json" download>下载示例回放包</a></details>
+    <section id="intent-panel-demo" class="intent-panel" aria-labelledby="intent-demo" hidden>
+      <div class="intent-panel-heading"><div><p class="eyebrow">Agent 来源：LegalGym 示例</p><h2>按步骤准备，再开始一次新运行</h2><p>当前版本需要在你的电脑上启动任务环境和 Agent。公开网页暂不提供云端运行。</p></div></div>
+      <ol class="path-steps">
+        <li><span class="step-marker" aria-hidden="true">1</span><div><h3>准备本机环境</h3><p>下载并解压启动包。Mac 运行 Start-Mac.command，Windows 运行 Start-Windows.cmd；脚本自动准备 Python、浏览器和项目依赖。</p><a class="primary" href="https://amasawasama.github.io/LegalGym/downloads/legalgym-quickstart.zip" download>下载自动配置启动包</a></div></li>
+        <li><span class="step-marker" aria-hidden="true">2</span><div><h3>配置模型，等待连接</h3><p>在启动窗口填写自己的模型接口、模型名和 API Key。配置完成后会自动打开本机运行页，请保持启动窗口打开；密钥不保存到文件。</p></div></li>
+        <li><span class="step-marker" aria-hidden="true">3</span><div><h3>在本机运行页开始任务</h3><p>选择已连接的示例 Agent，点击“开始运行”。日志、运行记录和 Word 交付都在该页查看；模型调用可能产生费用。</p><button class="secondary go-launch" type="button" hidden>选择 Agent 并开始任务</button></div></li>
+      </ol>
+      <details class="path-details"><summary>安装说明与手动启动方式</summary><p>启动包为预览版，尚未完成全新 Mac / Windows 实机安装验证。新任务可下载 Word，页面预览需要另配文档渲染器。</p><p>也可以<a href="https://amasawasama.github.io/LegalGym/downloads/legalgym-source.zip" download>下载完整项目源码</a>，按 README 安装并启动环境。手动启动的默认本机地址为 http://127.0.0.1:8841/lab/；自动启动器使用的地址以它实际打开的页面为准。</p><a id="open-local-lab" href="http://127.0.0.1:8841/lab/" target="_blank" rel="noopener" hidden>已手动启动默认端口服务，前往运行</a></details>
+    </section>
+    <section id="intent-panel-own" class="intent-panel" aria-labelledby="intent-own" hidden>
+      <div class="intent-panel-heading"><div><p class="eyebrow">Agent 来源：你的程序</p><h2>用 Starter 对接任务和工具</h2><p>你自行选择模型、框架和策略。当前连接目标仍是本机 LegalGym 环境，公网环境接口尚未开放。</p></div></div>
+      <ol class="path-steps">
+        <li><span class="step-marker" aria-hidden="true">1</span><div><h3>获取接入范例</h3><p>Starter 内含接入 README、可运行的 demo_agent.py 和 adapter_template.py。下载 Starter 本身不会安装或提供任务环境。</p><a class="primary" href="legalgym-agent-starter.zip" download>下载 Agent Starter</a></div></li>
+        <li><span class="step-marker" aria-hidden="true">2</span><div><h3>适配你的 Agent，并准备环境</h3><p>实现 run(task, environment, report)：把本次任务与工具定义交给自己的 Agent，真实工具调用经由 environment.call_tool 执行，并回传结果。交付须通过 submit 提交。</p><details class="path-details"><summary>还没有本机任务环境？</summary><p>可以先按示例 Agent 的步骤准备环境；自动启动器会先连接示例 Agent。之后另行启动自己的 Starter，并在在线列表中选择自己的 Agent。</p><button id="view-environment-setup" class="text-button" type="button">查看环境准备步骤</button></details></div></li>
+        <li><span class="step-marker" aria-hidden="true">3</span><div><h3>启动自己的 Starter，在运行页选择它</h3><p>实现模板后，使用 --agent-entry 加载自己的入口，--server 指向已打开的本机运行页地址。</p><pre class="adapter-command">python3 starter.py --server &lt;本机运行页的根地址&gt; --agent-entry adapter_template:run --name "My Legal Agent"</pre><button class="secondary go-launch" type="button" hidden>选择自己的 Agent 开始任务</button></div></li>
+      </ol>
+    </section>
     <div id="notice" class="notice" role="status" hidden></div>
-    <section class="connection" aria-labelledby="connection-title">
-      <div><h2 id="connection-title">连接外部 Agent</h2><p id="connection-status" aria-live="polite">正在连接本机任务后端…</p><button id="reconnect-backend" class="secondary" type="button" hidden>重新检测连接</button></div>
-      <details id="setup"><summary>查看连接方法</summary><p>首次使用可先按上方步骤下载自动配置启动包。手动接入时请下载完整项目、安装本机依赖；只有 starter 下载包还不能提供任务环境。在项目目录运行 .venv/bin/python local_lab/server.py --port 8841，再在另一个终端配置模型密钥并启动 starter。</p><div class="command"><code id="starter-command"></code><button id="copy-command" type="button">复制命令</button></div><p>模型密钥保留在 starter 进程。静态托管页可通过“导入回放记录”离线查看结果。</p><a id="open-local-lab" href="http://127.0.0.1:8841/lab/" target="_blank" rel="noopener" hidden>已启动本机服务，前往运行</a></details>
-    </section>
-    <section class="launch" aria-labelledby="launch-title">
-      <div><h2 id="launch-title">创建一次运行</h2><p>当前案例：虚构工程咨询合同，代表乙方审查四处条款。</p></div>
-      <div class="launch-controls"><label>选择在线 Agent<select id="agent-select" aria-label="选择在线 Agent"><option value="">等待 starter 连接</option></select></label><button id="start-run" class="primary" type="button" disabled>开始运行</button></div>
+    <section id="runtime-controls" class="runtime-controls" aria-labelledby="connection-title" hidden>
+      <div class="connection-heading"><div><p class="eyebrow">本机运行已就绪</p><h2 id="connection-title">选择 Agent，开始任务</h2><p id="connection-status" aria-live="polite">正在检测 Agent 连接…</p></div><button id="reconnect-backend" class="secondary" type="button">重新检测连接</button></div>
+      <div class="launch-controls"><label>选择在线 Agent<select id="agent-select" aria-label="选择在线 Agent"><option value="">等待 Starter 连接</option></select></label><button id="start-run" class="primary" type="button" disabled>开始运行</button></div>
+      <p id="agent-choice-hint" class="path-note"></p>
+      <details id="setup" class="path-details"><summary>Agent 还未连接？查看启动命令</summary><p>先在启动 Starter 的终端配置模型密钥。以下命令从完整项目根目录执行；自定义入口必须先实现。</p><div class="command"><code id="starter-command"></code><button id="copy-command" type="button">复制命令</button></div></details>
     </section>
     <div class="workspace">
-      <aside class="history"><div class="history-heading"><h2>运行记录</h2><span id="run-count">0</span></div><div id="run-list"><p class="muted">还没有运行记录。连接 Agent 后，点击“开始运行”。</p></div></aside>
+      <aside class="history"><div class="history-heading"><h2>已有运行</h2><span id="run-count">0</span></div><div id="run-list"><p class="muted">还没有运行记录。连接 Agent 后，点击“开始运行”。</p></div></aside>
       <section class="run-panel" aria-label="运行详情">
         <div id="empty-run" class="empty"><span class="empty-mark" aria-hidden="true">LG</span><h2>等待第一份交办</h2><p>开始后，这里会实时显示模型进度、工具调用、错误和页面截图。</p></div>
         <div id="run-detail" hidden>
           <div class="run-heading"><div><p class="eyebrow" id="run-id"></p><h2 id="run-title"></h2><p id="run-agent" class="muted"></p></div><span id="run-status" class="status"></span></div>
           <div class="metrics"><div><span>运行时间</span><strong id="run-duration">—</strong></div><div><span>工具调用</span><strong id="run-calls">0</strong></div><div><span>错误返回</span><strong id="run-errors">0</strong></div><div><span>页面截图</span><strong id="run-shots">0</strong></div></div>
           <p id="failure-summary" role="status" class="failure-summary" hidden></p>
-          <div class="actions"><a id="raw-log" class="secondary" target="_blank" rel="noopener">查看原始日志</a><a id="download-log" class="quiet-link" download>下载日志</a><button id="open-replay" class="secondary" type="button" hidden>查看运行记录</button><a id="export-replay" class="secondary" download>导出回放包</a><button id="stop-run" class="danger" type="button" hidden>停止运行</button><span id="stream-status" class="muted" aria-live="polite"></span></div>
-          <div class="tabs" role="tablist" aria-label="查看运行内容"><button id="tab-log" role="tab" aria-selected="true" aria-controls="panel-log" data-tab="log">执行日志</button><button id="tab-replay" role="tab" aria-selected="false" aria-controls="panel-replay" data-tab="replay" class="result-tab">运行记录</button><button id="tab-delivery" role="tab" aria-selected="false" aria-controls="panel-delivery" data-tab="delivery" class="result-tab">合同交付</button></div>
-          <div id="panel-log" role="tabpanel" aria-labelledby="tab-log"><div class="log-heading"><p>工具事件由环境记录；Agent 消息由 starter 上报。</p><label><input id="follow-log" type="checkbox" checked> 跟随最新日志</label></div><div id="event-log" class="event-log" aria-label="执行日志"></div></div>
+          <div class="actions"><a id="export-replay" class="secondary" download>下载回放包</a><button id="stop-run" class="danger" type="button" hidden>停止运行</button><span id="stream-status" class="muted" aria-live="polite"></span></div>
+          <div class="tabs" role="tablist" aria-label="查看运行内容"><button id="tab-log" role="tab" aria-selected="true" aria-controls="panel-log" data-tab="log" class="result-tab">执行日志</button><button id="tab-replay" role="tab" aria-selected="false" aria-controls="panel-replay" data-tab="replay" class="result-tab">运行记录</button><button id="tab-delivery" role="tab" aria-selected="false" aria-controls="panel-delivery" data-tab="delivery" class="result-tab">合同交付</button></div>
+          <div id="panel-log" role="tabpanel" aria-labelledby="tab-log"><div class="log-heading"><div><p>工具事件由环境记录；Agent 消息由 Starter 上报。</p><div class="log-links"><a id="raw-log" target="_blank" rel="noopener">查看原始日志</a><a id="download-log" download>下载日志</a></div></div><label><input id="follow-log" type="checkbox" checked> 跟随最新日志</label></div><div id="event-log" class="event-log" aria-label="执行日志"></div></div>
           <div id="panel-replay" role="tabpanel" aria-labelledby="tab-replay" hidden><div class="result-intro"><h3>本次交互回放</h3><p>沿工具调用逐步查看操作、返回结果与页面截图。全部浏览截图与页面文字可在下方展开。</p></div><p id="replay-message" class="empty-text">运行结束后，本页展示这次任务的交互回放。也可导入已有回放包。</p><div id="inline-replay"></div>
             <details id="page-records" class="page-records"><summary>浏览截图与页面文字</summary><div id="panel-screens"><p id="no-screens" class="empty-text">Agent 浏览资料后，真实页面截图会出现在这里。</p><div id="screen-buttons" class="screen-buttons"></div><figure id="screen-view" hidden><figcaption id="screen-caption"></figcaption><img id="screen-image" alt="本次运行的资料页面截图"><details><summary>查看页面文字</summary><pre id="screen-text"></pre></details></figure></div></details>
           </div>
@@ -47,7 +66,7 @@
         </div>
       </section>
     </div>
-    <footer>本机运行记录：.run/lab/ · 静态回放：在本页导入 .legalgym.json，无需上传云端</footer>
+    <footer>参考运行使用虚构案卷，仅供开发与功能演示。新任务运行当前需要本机环境，尚未提供正式法律质量评分。</footer>
   </main>
 </body>
 </html>
