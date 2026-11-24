@@ -4,11 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LegalGym · Agent 实验室</title>
-  <link rel="stylesheet" href="lab.css?v=intents-20261123">
+  <link rel="stylesheet" href="lab.css?v=reference-20261124">
   <link rel="stylesheet" href="replay.css">
   <script defer src="word-pager.js"></script>
   <script defer src="replay-view.js"></script>
-  <script defer src="lab.js?v=intents-20261123"></script>
+  <script id="reference-index" type="application/json">{"run":{"id":"c06-20261123-053953-4f7bd6","agentName":"独立 Python Agent · 本机接入验证","agentVersion":"starter-demo-0.1.1","model":"zai-org/glm-5.3-flash","case":"C06 · 临汀工程咨询合同","caseVersion":"c06-local-v1","status":"completed","createdAt":"2026-11-22T21:39:53.348+00:00","startedAt":"2026-11-22T21:39:53.349+00:00","finishedAt":"2026-11-22T21:41:25.599+00:00","eventCount":36,"toolCalls":9,"toolErrors":0,"screenshots":7,"document":{"wordPath":"assets/c06-contract-redline.docx","sourceSha256":"ccc3689af50df8eb1acd70c8ade5d66e45891e9f6108aa3ce795a07ab9ef93a4","previewState":"ready","previewPath":"assets/c06-contract-redline-page-1.png","previewPages":["assets/c06-contract-redline-page-1.png","assets/c06-contract-redline-page-2.png"],"pageCount":2,"renderedAt":"2026-11-22T22:12:31+00:00"},"score":null},"packetPath":"examples/c06-reference/replay.json","packagePath":"examples/c06-external-starter.legalgym.json"}</script>
+  <script defer src="lab.js?v=reference-20261124"></script>
 </head>
 <body>
   <header class="topbar"><a class="brand" href="../index.html">LegalGym <span>Agent 实验室</span></a><span id="runtime-mode" class="local-label">本机验证版</span></header>
@@ -41,6 +42,7 @@
         <li><span class="step-marker" aria-hidden="true">3</span><div><h3>启动自己的 Starter，在运行页选择它</h3><p>实现模板后，使用 --agent-entry 加载自己的入口，--server 指向已打开的本机运行页地址。</p><pre class="adapter-command">python3 starter.py --server &lt;本机运行页的根地址&gt; --agent-entry adapter_template:run --name "My Legal Agent"</pre><button class="secondary go-launch" type="button" hidden>选择自己的 Agent 开始任务</button></div></li>
       </ol>
     </section>
+    <div id="reference-loading" class="reference-loading" role="status" hidden><span id="reference-loading-text"></span><button id="retry-reference" class="secondary" type="button" hidden>重新加载参考记录</button></div>
     <div id="notice" class="notice" role="status" hidden></div>
     <section id="runtime-controls" class="runtime-controls" aria-labelledby="connection-title" hidden>
       <div class="connection-heading"><div><p class="eyebrow">本机运行已就绪</p><h2 id="connection-title">选择 Agent，开始任务</h2><p id="connection-status" aria-live="polite">正在检测 Agent 连接…</p></div><button id="reconnect-backend" class="secondary" type="button">重新检测连接</button></div>
@@ -49,9 +51,9 @@
       <details id="setup" class="path-details"><summary>Agent 还未连接？查看启动命令</summary><p>先在启动 Starter 的终端配置模型密钥。以下命令从完整项目根目录执行；自定义入口必须先实现。</p><div class="command"><code id="starter-command"></code><button id="copy-command" type="button">复制命令</button></div></details>
     </section>
     <div class="workspace">
-      <aside class="history"><div class="history-heading"><h2>已有运行</h2><span id="run-count">0</span></div><div id="run-list"><p class="muted">还没有运行记录。连接 Agent 后，点击“开始运行”。</p></div></aside>
+      <aside class="history"><div class="history-heading"><h2>已有运行</h2><span id="run-count">0</span></div><div id="run-list"><p class="muted">正在准备参考运行记录…</p></div></aside>
       <section class="run-panel" aria-label="运行详情">
-        <div id="empty-run" class="empty"><span class="empty-mark" aria-hidden="true">LG</span><h2>等待第一份交办</h2><p>开始后，这里会实时显示模型进度、工具调用、错误和页面截图。</p></div>
+        <div id="empty-run" class="empty"><span class="empty-mark" aria-hidden="true">LG</span><h2>正在准备运行记录</h2><p>参考示例无需启动 Agent。加载后可查看执行日志、交互回放和合同交付。</p></div>
         <div id="run-detail" hidden>
           <div class="run-heading"><div><p class="eyebrow" id="run-id"></p><h2 id="run-title"></h2><p id="run-agent" class="muted"></p></div><span id="run-status" class="status"></span></div>
           <div class="metrics"><div><span>运行时间</span><strong id="run-duration">—</strong></div><div><span>工具调用</span><strong id="run-calls">0</strong></div><div><span>错误返回</span><strong id="run-errors">0</strong></div><div><span>页面截图</span><strong id="run-shots">0</strong></div></div>
@@ -60,7 +62,7 @@
           <div class="tabs" role="tablist" aria-label="查看运行内容"><button id="tab-log" role="tab" aria-selected="true" aria-controls="panel-log" data-tab="log" class="result-tab">执行日志</button><button id="tab-replay" role="tab" aria-selected="false" aria-controls="panel-replay" data-tab="replay" class="result-tab">运行记录</button><button id="tab-delivery" role="tab" aria-selected="false" aria-controls="panel-delivery" data-tab="delivery" class="result-tab">合同交付</button></div>
           <div id="panel-log" role="tabpanel" aria-labelledby="tab-log"><div class="log-heading"><div><p>工具事件由环境记录；Agent 消息由 Starter 上报。</p><div class="log-links"><a id="raw-log" target="_blank" rel="noopener">查看原始日志</a><a id="download-log" download>下载日志</a></div></div><label><input id="follow-log" type="checkbox" checked> 跟随最新日志</label></div><div id="event-log" class="event-log" aria-label="执行日志"></div></div>
           <div id="panel-replay" role="tabpanel" aria-labelledby="tab-replay" hidden><div class="result-intro"><h3>本次交互回放</h3><p>沿工具调用逐步查看操作、返回结果与页面截图。全部浏览截图与页面文字可在下方展开。</p></div><p id="replay-message" class="empty-text">运行结束后，本页展示这次任务的交互回放。也可导入已有回放包。</p><div id="inline-replay"></div>
-            <details id="page-records" class="page-records"><summary>浏览截图与页面文字</summary><div id="panel-screens"><p id="no-screens" class="empty-text">Agent 浏览资料后，真实页面截图会出现在这里。</p><div id="screen-buttons" class="screen-buttons"></div><figure id="screen-view" hidden><figcaption id="screen-caption"></figcaption><img id="screen-image" alt="本次运行的资料页面截图"><details><summary>查看页面文字</summary><pre id="screen-text"></pre></details></figure></div></details>
+            <details id="page-records" class="page-records"><summary>浏览截图与页面文字</summary><div id="panel-screens"><p id="no-screens" class="empty-text">Agent 浏览资料后，真实页面截图会出现在这里。</p><div id="screen-buttons" class="screen-buttons"></div><figure id="screen-view" hidden><figcaption id="screen-caption"></figcaption><img loading="lazy" id="screen-image" alt="本次运行的资料页面截图"><details><summary>查看页面文字</summary><pre id="screen-text"></pre></details></figure></div></details>
           </div>
           <div id="panel-delivery" role="tabpanel" aria-labelledby="tab-delivery" hidden><div id="delivery-wait" class="empty-text">提交完成后，可以查看全部 Word 页面并下载合同。</div><div id="delivery-ready" hidden><h3>本次交付已保存</h3><p>以下页面来自本次导出的 Word。可左右翻阅全部页面；完整修订与批注保留在下载文件中。</p><div class="actions"><button id="delivery-replay" class="primary" type="button">在本页回看修订过程</button><a id="delivery-word" class="secondary" download>下载修订合同 Word</a></div><div id="word-pages"></div></div><p class="score-note">法律质量评分尚未建立。导入回放仅用于开发查看，不作为已验证成绩。</p></div>
         </div>
